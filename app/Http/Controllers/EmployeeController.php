@@ -5,15 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class EmployeeController extends Controller
 {
-    public function showHome()
+    public function showHome(Employee $currentEmployee = null)
     {
-        $employees = Employee::select('employee_id', 'fname', 'lname', 'birthdate', 'age', 'address', 'salary')->get();
-        dd($employees->toArray());
-        return view('home', compact('employees'));
+        $employees = Employee::select('id', 'employee_id', 'fname', 'lname', 'birthdate', 'age', 'address', 'salary')->get();
+
+        return view('home', compact('employees', 'currentEmployee'));
     }
 
     public function store(Request $request)
@@ -24,7 +23,7 @@ class EmployeeController extends Controller
             'lname' => 'required|string',
             'birthdate' => 'required|date',
             'address' => 'required|string',
-            'salary' => 'required|max:99999.99|decimal:1,2'
+            'salary' => 'required|max:999999.99|decimal:1,2'
         ]);
 
         $validatedData['age'] = Carbon::parse($request->birthdate)->age;
@@ -34,41 +33,42 @@ class EmployeeController extends Controller
         return redirect()->route('showHome')->with('created', 'Created Successfully');
     }
 
-    public function edit(Employee $employee)
+    public function edit(Employee $currentEmployee)
     {
-        $employees = Employee::select('employee_id', 'fname', 'lname', 'birthdate', 'age', 'address', 'salary')->get();
+        $employees = Employee::select('id', 'employee_id', 'fname', 'lname', 'birthdate', 'age', 'address', 'salary')->get();
 
-        return view('home', compact('employee', 'employess'));
+        return view('home', compact('currentEmployee', 'employees'));
     }
 
-    public function update(Request $request, Employee $employee)
+    public function update(Request $request, Employee $currentEmployee = null)
     {
+        // dd($currentEmployee->toArray());
         $validatedData = $request->validate([
-            'employee_id' => 'required|numeric|unique:employees,employee_id',
+            'employee_id' => 'required|numeric|unique:employees,employee_id,' . $currentEmployee->id,
             'fname' => 'required|string',
             'lname' => 'required|string',
             'birthdate' => 'required|date',
             'address' => 'required|string',
-            'salary' => 'required|max:99999.99|decimal:1,2'
+            'salary' => 'required|max:999999.99|decimal:1,2'
         ]);
 
         $validatedData['age'] = Carbon::parse($request->birthdate)->age;
 
-        $employee->update($validatedData);
+        $currentEmployee->update($validatedData);
 
         return redirect()->route('showHome')->with('updated', 'Updated Successfully');
     }
 
-    public function delete(Employee $employee)
+    public function delete(Employee $currentEmployee)
     {
-        $employees = Employee::select('employee_id', 'fname', 'lname', 'birthdate', 'age', 'address', 'salary')->get();
+        $employees = Employee::select('id', 'employee_id', 'fname', 'lname', 'birthdate', 'age', 'address', 'salary')->get();
 
-        return view('home', compact('employee', 'employess'));
+        return view('home', compact('currentEmployee', 'employees'));
     }
 
-    public function destroy(Employee $employee)
+    public function destroy(Employee $currentEmployee)
     {
-        $employee->delete();
+        $currentEmployee->delete();
 
         return redirect()->route('showHome')->with('deleted', 'Deleted Successfully');
     }
