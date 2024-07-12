@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Employee Management System</title>
     @vite('resources/css/app.css')
 </head>
 
@@ -31,10 +31,23 @@
 
         <main class="flex justify-center flex-grow">
             <section class="flex items-center justify-center w-1/2">
-                <div class="px-5 py-3 bg-white rounded-lg shadow-md">
-                    <form class="flex flex-col gap-1" action="" method="post" id="employee-form">
+                <div class="relative flex justify-center px-5 py-3 bg-white rounded-lg shadow-md">
+                    @isset($warningMessage)
+                        <div role="alert" class="absolute w-auto alert -top-28 alert-warning to">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-current shrink-0" fill="none"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span>{{ $warningMessage }}</span>
+                            <div>
+                                <a href="{{ route('showHome') }}" class="btn btn-sm">No</a>
+                            </div>
+                        </div>
+                    @endisset
+                    <form class="flex flex-col gap-1" action="" method="POST" id="employee-form">
                         @csrf
-                        <input type="hidden" id="method" name="_method">
+                        <input type="hidden" id="method" name="_method"> {{-- spoofing, same as @method() --}}
                         <div class="flex gap-5">
                             <label class="w-full form-control">
                                 <div class="label">
@@ -42,7 +55,7 @@
                                 </div>
                                 <input
                                     class="w-full js-input input input-bordered {{ $errors->has('employee_id') ? 'input-error' : '' }}"
-                                    name="employee_id" type="text" placeholder="Type here"
+                                    name="employee_id" type="number" placeholder="Type here"
                                     {{ $errors->any() || request()->routeIs('edit') || request()->routeIs('delete') ? '' : 'disabled' }}
                                     value="{{ old('employee_id', $currentEmployee->employee_id ?? '') }}"
                                     {{ request()->routeIs('delete') ? 'readonly' : '' }} />
@@ -119,7 +132,7 @@
                                 </div>
                                 <input
                                     class="w-full js-input input input-bordered {{ $errors->has('salary') ? 'input-error' : '' }}"
-                                    name="salary" type="" placeholder="Type here"
+                                    name="salary" type="number" placeholder="Type here"
                                     {{ $errors->any() || request()->routeIs('edit') || request()->routeIs('delete') ? '' : 'disabled' }}
                                     value="{{ old('salary', $currentEmployee->salary ?? '') }}"
                                     {{ request()->routeIs('delete') ? 'readonly' : '' }} />
@@ -147,19 +160,22 @@
                             @enderror
                         </label>
                         <div class="flex justify-center gap-3 my-3">
-                            <button class="btn btn-primary btn-sm" type="button" id="create-btn"
-                                {{ request()->routeIs('showHome') ? '' : 'disabled' }}>
+                            <a class="btn btn-primary btn-sm" id="home-btn" href="{{ route('showHome') }}">
+                                Create
+                            </a>
+                            <button class="btn btn-primary btn-sm" type="button" id="create-btn">
                                 Create
                             </button>
-                            <button class="text-white btn btn-success btn-sm js-buttons" id="save-btn" type="button"
+                            <button class="text-white btn btn-success btn-sm js-buttons" id="save-btn"
+                                type="button"
                                 {{ $errors->any() && request()->routeIs('showHome') ? '' : 'disabled' }}>
                                 Save
                             </button>
-                            <button class="text-white btn btn-info btn-sm js-buttons" type="button"
+                            <button class="text-white btn btn-info btn-sm js-buttons" type="button" id="update-btn"
                                 {{ request()->routeIs('edit') ? '' : 'disabled' }}>
                                 Update
                             </button>
-                            <button class="text-white btn btn-error btn-sm js-buttons" type="button"
+                            <button class="text-white btn btn-error btn-sm js-buttons" type="button" id="delete-btn"
                                 {{ request()->routeIs('delete') ? '' : 'disabled' }}>
                                 Delete
                             </button>
@@ -172,7 +188,7 @@
                 <div class="relative flex justify-center w-full py-3 bg-white rounded-lg shadow-md h-fit">
                     {{-- ALERTS --}}
                     @session('created')
-                        <div role="alert" class="absolute w-auto text-white -top-20 alert alert-success">
+                        <div role="alert" class="absolute w-auto text-white -top-20 alert alert-success js-alert">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-current shrink-0"
                                 fill="none" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -182,7 +198,7 @@
                         </div>
                     @endsession
                     @session('updated')
-                        <div role="alert" class="absolute w-auto text-white -top-20 alert alert-info">
+                        <div role="alert" class="absolute w-auto text-white -top-20 alert alert-info js-alert">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-current shrink-0"
                                 fill="none" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -192,7 +208,7 @@
                         </div>
                     @endsession
                     @session('deleted')
-                        <div role="alert" class="absolute w-auto text-white -top-20 alert alert-error">
+                        <div role="alert" class="absolute w-auto text-white -top-20 alert alert-error js-alert">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-current shrink-0"
                                 fill="none" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -250,16 +266,37 @@
     </div>
 
     <script>
-        // remove disabled in save button when create button in clicked
-        document.getElementById('create-btn').addEventListener('click', () => {
-            document.querySelectorAll('.js-input').forEach(input => {
-                input.removeAttribute('disabled');
-            });
-            document.getElementById('save-btn').removeAttribute('disabled');
-        });
+        const homeBtn = document.getElementById('home-btn');
+        const createBtn = document.getElementById('create-btn');
+        const saveBtn = document.getElementById('save-btn');
+        const updateBtn = document.getElementById('update-btn');
+        const deleteBtn = document.getElementById('delete-btn');
+        const employeeForm = document.getElementById('employee-form');
 
-        // remove alerts after 3 seconds
-        document.querySelectorAll('.alert').forEach(alert => {
+        /* Show and hide create and home button */
+        if (updateBtn.disabled || deleteBtn.disabled) { // if either the update or delete button is disabled
+            createBtn.classList.remove('hidden');
+            homeBtn.classList.add('hidden');
+            createBtn.addEventListener('click', () => { // enable all input fields with the class when clicked
+                document.querySelectorAll('.js-input').forEach(input => {
+                    input.removeAttribute('disabled');
+                });
+                saveBtn.removeAttribute('disabled');
+                createBtn.disabled = true;
+            });
+        } else {
+
+        }
+        if (!updateBtn.disabled || !deleteBtn.disabled) { // if both the update and delete buttons are not disabled
+            homeBtn.classList.remove('hidden');
+            createBtn.classList.add('hidden');
+        }
+
+        // disable create button if save button is not disabled using guard && operator instead of if else
+        saveBtn.disabled === false && (createBtn.disabled = true);
+
+        /* remove alerts after 3 seconds */
+        document.querySelectorAll('.js-alert').forEach(alert => {
             if (alert) {
                 setTimeout(() => {
                     alert.remove();
@@ -267,8 +304,7 @@
             }
         });
 
-        // handle form submission based on which button is clicked
-        const employeeForm = document.getElementById('employee-form');
+        /* handle form submission based on which button is clicked */
 
         // Select the hidden input field that will be used to set the HTTP method (e.g., POST, PUT, DELETE)
         const method = document.getElementById('method');
