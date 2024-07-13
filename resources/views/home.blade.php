@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Employee Management System</title>
     @vite('resources/css/app.css')
+    <script src="{{ asset('jquery.js') }}"></script>
 </head>
 
 <body>
@@ -41,7 +42,6 @@
             </section>
         </main>
     </div>
-
     @include('script')
 </body>
 

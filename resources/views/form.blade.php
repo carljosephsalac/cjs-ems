@@ -105,7 +105,7 @@
         @enderror
     </label>
     <div class="flex justify-center gap-3 my-3">
-        <a class="btn btn-primary btn-sm" id="home-btn" href="{{ route('showHome') }}">
+        <a class="hidden btn btn-primary btn-sm" id="home-btn" href="{{ route('showHome') }}">
             Create
         </a>
         <button class="btn btn-primary btn-sm" type="button" id="create-btn">

@@ -1,4 +1,72 @@
 <script>
+    const homeBtn = $('#home-btn');
+    const createBtn = $('#create-btn');
+    const saveBtn = $('#save-btn');
+    const updateBtn = $('#update-btn');
+    const deleteBtn = $('#delete-btn');
+
+    /* Show and hide create and home button */
+    if (updateBtn.prop('disabled') || deleteBtn.prop('disabled')) { // if either the update or delete button is disabled
+        createBtn.removeClass('hidden');
+        homeBtn.addClass('hidden');
+        createBtn.on('click', function() { // enable all input fields with the class when clicked
+            $('.js-input').each(function() {
+                $(this).removeAttr('disabled');
+            });
+            saveBtn.removeAttr('disabled');
+            createBtn.prop('disabled', true);
+        });
+    }
+
+    // if both the update and delete buttons are not disabled
+    if (!updateBtn.prop('disabled') || !deleteBtn.prop('disabled')) {
+        homeBtn.removeClass('hidden');
+        createBtn.addClass('hidden');
+    }
+
+    // disable create button if save button is not disabled using guard && operator instead of if else
+    if (!saveBtn.prop('disabled')) {
+        createBtn.prop('disabled', true);
+    }
+
+    /* remove alerts after 3 seconds */
+    $('.js-alert').each(function(_, element) {
+        setTimeout(() => {
+            $(element).remove();
+        }, 3000);
+    });
+
+    /* handle form submission based on which button is clicked */
+
+    // Get the current employee ID from the Blade template and assign it to a JavaScript variable
+    const currentEmployeeId = "{{ $currentEmployee->id ?? '' }}";
+    const employeeForm = $('#employee-form');
+    const method = $('#method'); // hidden input for HTTP method
+
+    $('.js-buttons').each(function(_, button) {
+        $(button).on('click', function() {
+            const btnText = $(button).text().trim();
+            if (btnText === 'Save') {
+                employeeForm.attr('action', '{{ route('store') }}');
+                method.val('POST');
+            } else if (btnText === 'Update') {
+                employeeForm.attr('action',
+                    '{{ route('update', ['currentEmployee' => ':currentEmployeeId']) }}'
+                    .replace(':currentEmployeeId', currentEmployeeId));
+                method.val('PUT');
+            } else if (btnText === 'Delete') {
+                employeeForm.attr('action',
+                    '{{ route('destroy', ['currentEmployee' => ':currentEmployeeId']) }}'
+                    .replace(':currentEmployeeId', currentEmployeeId));
+                method.val('DELETE');
+            }
+            employeeForm.submit();
+        });
+    });
+</script>
+
+
+{{-- <script>
     const homeBtn = document.getElementById('home-btn');
     const createBtn = document.getElementById('create-btn');
     const saveBtn = document.getElementById('save-btn');
@@ -66,4 +134,4 @@
             employeeForm.submit();
         });
     });
-</script>
+</script> --}}

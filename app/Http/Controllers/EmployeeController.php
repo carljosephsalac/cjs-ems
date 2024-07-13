@@ -55,7 +55,6 @@ class EmployeeController extends Controller
     {
         $employees = Employee::select('id', 'employee_id', 'fname', 'lname', 'birthdate', 'age', 'address', 'salary')->get();
         $warningMessage = 'Are you sure you want to delete ' . $currentEmployee->fname . ' information?';
-        // dd($warningMessage);
         return view('home', compact('currentEmployee', 'employees', 'warningMessage'));
     }
 
