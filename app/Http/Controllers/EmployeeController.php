@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Employee;
+use Log;
 use Carbon\Carbon;
+use App\Models\Employee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class EmployeeController extends Controller
 {
-    public function showHome(Employee $currentEmployee)
+    public function index(Employee $currentEmployee)
     {
         $employees = Employee::select('id', 'employee_id', 'fname', 'lname', 'birthdate', 'age', 'address', 'salary')->get();
         return view('home', compact('employees', 'currentEmployee'));
@@ -16,7 +18,7 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(), [
             'employee_id' => 'required|numeric|unique:employees,employee_id',
             'fname' => 'required|string',
             'lname' => 'required|string',
@@ -25,20 +27,41 @@ class EmployeeController extends Controller
             'salary' => 'required|max:999999.99|decimal:1,2'
         ]);
 
-        $validatedData['age'] = Carbon::parse($request->birthdate)->age;
-        Employee::create($validatedData);
-        return redirect()->route('showHome')->with('created', 'Created Successfully');
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $validatedData = $request->all();
+            $validatedData['age'] = Carbon::parse($request->birthdate)->age;
+            $employee = Employee::create($validatedData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Created Successfully',
+                'employee' => $employee
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to create employee: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while creating the employee.'
+            ], 500);
+        }
     }
 
     public function edit(Employee $currentEmployee)
     {
-        $employees = Employee::select('id', 'employee_id', 'fname', 'lname', 'birthdate', 'age', 'address', 'salary')->get();
-        return view('home', compact('currentEmployee', 'employees'));
+        return response()->json($currentEmployee);
     }
 
     public function update(Request $request, Employee $currentEmployee)
     {
-        $validatedData = $request->validate([
+        $validator = Validator::make($request->all(), [
             'employee_id' => 'required|numeric|unique:employees,employee_id,' . $currentEmployee->id,
             'fname' => 'required|string',
             'lname' => 'required|string',
@@ -46,21 +69,54 @@ class EmployeeController extends Controller
             'address' => 'required|string',
             'salary' => 'required|max:999999.99|decimal:1,2'
         ]);
-        $validatedData['age'] = Carbon::parse($request->birthdate)->age;
-        $currentEmployee->update($validatedData);
-        return redirect()->route('showHome')->with('updated', 'Updated Successfully');
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $validatedData = $request->all();
+            $validatedData['age'] = Carbon::parse($request->birthdate)->age;
+            $currentEmployee->update($validatedData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Updated Successfully',
+                'currentEmployee' => $currentEmployee
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to update employee: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while updating the employee.'
+            ], 500);
+        }
     }
 
     public function delete(Employee $currentEmployee)
     {
-        $employees = Employee::select('id', 'employee_id', 'fname', 'lname', 'birthdate', 'age', 'address', 'salary')->get();
-        $warningMessage = 'Are you sure you want to delete ' . $currentEmployee->fname . ' information?';
-        return view('home', compact('currentEmployee', 'employees', 'warningMessage'));
+        return response()->json($currentEmployee);
     }
 
     public function destroy(Employee $currentEmployee)
     {
-        $currentEmployee->delete();
-        return redirect()->route('showHome')->with('deleted', 'Deleted Successfully');
+        try {
+            $currentEmployee->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Deleted Successfully'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to delete employee: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while deleting the employee.'
+            ], 500);
+        }
     }
 }
