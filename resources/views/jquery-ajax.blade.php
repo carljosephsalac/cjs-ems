@@ -45,12 +45,12 @@
                                     <td class="whitespace-nowrap">${employee.salary}</td>
                                     <td class="whitespace-nowrap">${employee.address}</td>
                                     <td>
-                                        <button class="text-white jq-edit-btn btn btn-info btn-sm" type="button" data-id="${employee.id}">
+                                        <button class="text-white btn btn-info btn-sm" type="button" data-id="${employee.id}" id="edit-btn">
                                             Edit
                                         </button>
                                     </td>
                                     <td>
-                                        <button class="text-white jq-delete-btn btn btn-error btn-sm" type="button" data-id="${employee.id}">
+                                        <button class="text-white btn btn-error btn-sm" type="button" data-id="${employee.id}" id="delete-btn">
                                             Delete
                                         </button>
                                     </td>
@@ -75,7 +75,7 @@
 
     function edit() {
         // Attach a delegated event listener to the static parent element #jq-tbody
-        $('#jq-tbody').on('click', '.jq-edit-btn', function(e) { // ensures that new added edit button is clickable
+        $('#jq-tbody').on('click', '#edit-btn', function(e) { // ensures that new added edit button is clickable
             const employeeId = $(this).data('id'); // get data-id of the button
             $('#employee-id').val(employeeId); // Set the employeeId in the hidden input field
             $.ajax({
@@ -137,12 +137,12 @@
                                     <td class="whitespace-nowrap">${currentEmployee.salary}</td>
                                     <td class="whitespace-nowrap">${currentEmployee.address}</td>
                                     <td>
-                                        <button class="text-white jq-edit-btn btn btn-info btn-sm" type="button" data-id="${currentEmployee.id}">
+                                        <button class="text-white btn btn-info btn-sm" type="button" data-id="${currentEmployee.id}" id="edit-btn">
                                             Edit
                                         </button>
                                     </td>
                                     <td>
-                                        <button class="text-white jq-delete-btn btn btn-error btn-sm" type="button"
+                                        <button class="text-white btn btn-error btn-sm" type="button" id="delete-btn"
                                             data-id="${currentEmployee.id}">
                                             Delete
                                         </button>
@@ -172,7 +172,7 @@
 
     function deleteEmployee() {
         // Attach a delegated event listener to the static parent element #jq-tbody
-        $('#jq-tbody').on('click', '.jq-delete-btn', function(e) { // ensures that new added edit button is clickable
+        $('#jq-tbody').on('click', '#delete-btn', function(e) { // ensures that new added edit button is clickable
             const employeeId = $(this).data('id'); // get data-id of the button
             $('#employee-id').val(employeeId); // Set the employeeId in the hidden input field
             $.ajax({
@@ -202,7 +202,7 @@
                     $('.jq-no-btn').on('click', function() {
                         resetForm();
                         destroyBtn.prop('disabled', true);
-                        hiddenMethod.val('DELETE'); // Clear the hidden input field
+                        hiddenMethod.val(''); // Clear the hidden input field
                     });
 
                     $('[name="employee_id"]').val(response.employee_id);
@@ -213,7 +213,7 @@
                     $('[name="salary"]').val(response.salary);
                     $('[name="address"]').val(response.address);
                     $('input').removeAttr('disabled');
-                    hiddenMethod.val('DELETE'); // Set method to PUT for update
+                    hiddenMethod.val('DELETE'); // Set method to DELETE for destroy
 
                     createBtn.prop('disabled', true); // Disable create button
                     saveBtn.prop('disabled', true); // Disable save button
@@ -307,7 +307,9 @@
                 <span>${message}</span>
             </div>
         `;
+
         $('.jq-table-container').append(alert); // append alert
+
         setTimeout(() => { // remove alert after 3s.
             $('.jq-alert').remove();
         }, 3000);

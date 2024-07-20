@@ -30,83 +30,41 @@
             </div>
         </nav>
 
-
-        <main class="flex justify-center flex-grow">
-            <section class="flex items-center justify-center w-1/2">
-                <div class="relative flex justify-center px-5 py-3 bg-white rounded-lg shadow-md jq-form-container">
+        <main class="flex justify-center flex-grow pt-[68px]">
+            <section class="flex items-center justify-center w-fit">
+                <div
+                    class="relative flex justify-center px-5 py-3 mx-20 bg-white rounded-lg shadow-md jq-form-container">
                     <form class="flex flex-col gap-1" action="" method="POST" id="employee-form">
                         @csrf
                         <input type="hidden" id="method" name="_method"> {{-- spoofing, same as @method() --}}
                         <div class="flex gap-5">
-                            <label class="w-full form-control">
-                                <div class="label">
-                                    <span class="label-text">Employee ID</span>
-                                </div>
-                                <input class="w-full jq-input input input-bordered" name="employee_id" type="number"
-                                    placeholder="Type here" disabled />
-                            </label>
-                            <label class="w-full form-control">
-                                <div class="label">
-                                    <span class="label-text">First Name</span>
-                                </div>
-                                <input class="w-full jq-input input input-bordered" name="fname" type="text"
-                                    placeholder="Type here" disabled />
-                            </label>
+                            <x-input name="employee_id" type="number">Employee ID</x-input>
+                            <x-input name="fname" type="text">First Name</x-input>
                         </div>
                         <div class="flex gap-5">
-                            <label class="w-full form-control">
-                                <div class="label">
-                                    <span class="label-text">Last Name</span>
-                                </div>
-                                <input class="w-full jq-input input input-bordered" name="lname" type="text"
-                                    placeholder="Type here" disabled />
-                            </label>
-                            <label class="w-full form-control">
-                                <div class="label">
-                                    <span class="label-text">Birthdate</span>
-                                </div>
-                                <input class="w-full jq-input input input-bordered " name="birthdate" type="date"
-                                    placeholder="Type here" disabled />
-                            </label>
+                            <x-input name="lname" type="text">Last Name</x-input>
+                            <x-input name="birthdate" type="date">Birthdate</x-input>
                         </div>
                         <div class="flex gap-5">
-                            <label class="w-full form-control">
-                                <div class="label">
-                                    <span class="label-text">Age (auto)</span>
-                                </div>
-                                <input class="w-full input input-bordered " name="age" type="number"
-                                    placeholder="Auto calculate" readonly />
-                            </label>
-                            <label class="w-full form-control">
-                                <div class="label">
-                                    <span class="label-text">Salary</span>
-                                </div>
-                                <input class="w-full jq-input input input-bordered" name="salary" type="number"
-                                    placeholder="Type here" disabled />
-                            </label>
+                            <x-input name="age" placeholder="Auto calculate" :disabled="false" readonly
+                                :age="true">
+                                Age (auto)
+                            </x-input>
+                            <x-input name="salary" type="number">Salary</x-input>
                         </div>
-                        <label class="w-full form-control">
-                            <div class="label">
-                                <span class="label-text">Address</span>
-                            </div>
-                            <input class="w-full jq-input input input-bordered" name="address" type="text"
-                                placeholder="Type here" disabled />
-                        </label>
-                        <input type="hidden" name="employee-id" id="employee-id" value="">
+                        <x-input name="address" type="text">Address</x-input>
+                        <input type="hidden" name="employee-id" id="employee-id" value=""> {{-- container for currentEmployee id --}}
                         <div class="flex justify-center gap-3 my-3">
-                            <button class="btn btn-primary btn-sm" type="button" id="create-btn">
+                            <button class="text-white btn btn-primary btn-sm" type="button" id="create-btn">
                                 Create
                             </button>
-                            <button class="text-white btn btn-success btn-sm js-buttons" id="save-btn" type="button"
-                                disabled>
+                            <button class="text-white btn btn-success btn-sm" id="save-btn" type="button" disabled>
                                 Save
                             </button>
-                            <button class="text-white btn btn-info btn-sm js-buttons" type="button" id="update-btn"
-                                disabled>
+                            <button class="text-white btn btn-info btn-sm" type="button" id="update-btn" disabled>
                                 Update
                             </button>
-                            <button class="text-white btn btn-error btn-sm js-buttons" type="button" id="destroy-btn"
-                                disabled>
+                            <button class="text-white btn btn-error btn-sm" type="button" id="destroy-btn" disabled>
                                 Destroy
                             </button>
                         </div>
@@ -114,43 +72,43 @@
                 </div>
             </section>
 
-            <section class="flex items-center justify-center w-1/2 px-10">
+            <section class="flex items-center justify-center flex-grow px-24">
                 <div
-                    class="relative flex justify-center w-full py-3 bg-white rounded-lg shadow-md jq-table-container h-fit">
-                    <div class="max-h-[500px] overflow-x-auto overflow-y-auto ">
+                    class="relative flex justify-center w-full py-2 bg-white rounded-lg shadow-md jq-table-container h-fit">
+                    <div class="max-h-[550px] overflow-x-auto overflow-y-auto w-full">
                         <table class="table text-center no-wrap-table">
-                            <thead>
+                            <thead class="sticky top-0 bg-white">
                                 <tr>
-                                    <th>Employee ID</th>
-                                    <th>First Name</th>
-                                    <th>Last Name</th>
-                                    <th>Birthdate</th>
-                                    <th>Age</th>
-                                    <th>Salary</th>
-                                    <th>Address</th>
-                                    <th>Edit</th>
-                                    <th>Delete</th>
+                                    <th class="pt-1">Employee ID</th>
+                                    <th class="pt-1">First Name</th>
+                                    <th class="pt-1">Last Name</th>
+                                    <th class="pt-1">Birthdate</th>
+                                    <th class="pt-1">Age</th>
+                                    <th class="pt-1">Salary</th>
+                                    <th class="pt-1">Address</th>
+                                    <th class="pt-1">Edit</th>
+                                    <th class="pt-1">Delete</th>
                                 </tr>
                             </thead>
                             <tbody id="jq-tbody">
                                 @foreach ($employees as $employee)
                                     <tr data-id="{{ $employee->id }}">
-                                        <th class=" whitespace-nowrap">{{ $employee->employee_id }}</th>
-                                        <td class=" whitespace-nowrap">{{ $employee->fname }}</td>
-                                        <td class=" whitespace-nowrap">{{ $employee->lname }}</td>
-                                        <td class=" whitespace-nowrap">{{ $employee->birthdate }}</td>
-                                        <td class=" whitespace-nowrap">{{ $employee->age }}</td>
-                                        <td class=" whitespace-nowrap">{{ $employee->salary }}</td>
-                                        <td class=" whitespace-nowrap">{{ $employee->address }}</td>
+                                        <th class="whitespace-nowrap">{{ $employee->employee_id }}</th>
+                                        <td class="whitespace-nowrap">{{ $employee->fname }}</td>
+                                        <td class="whitespace-nowrap">{{ $employee->lname }}</td>
+                                        <td class="whitespace-nowrap">{{ $employee->birthdate }}</td>
+                                        <td class="whitespace-nowrap">{{ $employee->age }}</td>
+                                        <td class="whitespace-nowrap">{{ $employee->salary }}</td>
+                                        <td class="whitespace-nowrap">{{ $employee->address }}</td>
                                         <td>
-                                            <button class="text-white jq-edit-btn btn btn-info btn-sm" type="button"
+                                            <button class="text-white btn btn-info btn-sm" type="button" id="edit-btn"
                                                 data-id="{{ $employee->id }}">
                                                 Edit
                                             </button>
                                         </td>
                                         <td>
-                                            <button class="text-white jq-delete-btn btn btn-error btn-sm"
-                                                type="button" data-id="{{ $employee->id }}">
+                                            <button class="text-white btn btn-error btn-sm" type="button"
+                                                id="delete-btn" data-id="{{ $employee->id }}">
                                                 Delete
                                             </button>
                                         </td>
@@ -162,6 +120,14 @@
                 </div>
             </section>
         </main>
+        <!--
+            These hidden divs are used to ensure that Tailwind CSS includes the alert classes
+            in the final build, even when they are dynamically added via JavaScript.
+            Do not remove these divs as they are necessary for proper styling of dynamic alerts.
+        -->
+        <div class="hidden alert-success"></div>
+        <div class="hidden alert-info"></div>
+        <div class="hidden alert-error"></div>
     </div>
     @include('jquery-ajax')
 </body>
