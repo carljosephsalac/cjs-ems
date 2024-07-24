@@ -11,10 +11,10 @@
 </head>
 
 <body>
-    <div class="flex flex-col h-screen bg-gray-200">
+    <div class="flex flex-col bg-gray-200 xl:h-screen">
         <nav class="fixed z-10 shadow-md navbar bg-base-100">
             <div class="flex-1">
-                <a class="text-xl btn btn-ghost">Employee Management System</a>
+                <a class="text-md sm:text-xl btn btn-ghost">Employee Management System</a>
             </div>
             <div class="flex-none">
                 <ul class="px-1 menu menu-horizontal">
@@ -30,22 +30,34 @@
             </div>
         </nav>
 
-        <main class="flex justify-center flex-grow pt-[68px]">
-            <section class="flex items-center justify-center w-fit">
+        <main
+            class="flex flex-col xl:flex-row justify-center px-3 md:px-5 lg:px-8 flex-grow xl:pt-[68px] pt-[160px] items-center xl:gap-5 gap-20 pb-10">
+            <section class="flex items-center justify-center w-full sm:w-fit xl:w-[500px]">
                 <div
-                    class="relative flex justify-center px-5 py-3 mx-20 bg-white rounded-lg shadow-md jq-form-container">
-                    <form class="flex flex-col gap-1" action="" method="POST" id="employee-form">
+                    class="relative flex justify-center w-full px-5 py-3 bg-white rounded-lg shadow-md jq-form-container">
+                    <form class="flex flex-col w-full gap-1" action="" method="POST" id="employee-form">
                         @csrf
                         <input type="hidden" id="method" name="_method"> {{-- spoofing, same as @method() --}}
-                        <div class="flex gap-5">
+                        <div class="block sm:hidden">
+                            <x-input name="employee_id" type="number">Employee ID</x-input>
+                            <x-input name="fname" type="text">First Name</x-input>
+                            <x-input name="lname" type="text">Last Name</x-input>
+                            <x-input name="birthdate" type="date">Birthdate</x-input>
+                            <x-input name="age" placeholder="Auto calculate" :disabled="false" readonly
+                                :age="true">
+                                Age (auto)
+                            </x-input>
+                            <x-input name="salary" type="number">Salary</x-input>
+                        </div>
+                        <div class="hidden gap-5 sm:flex">
                             <x-input name="employee_id" type="number">Employee ID</x-input>
                             <x-input name="fname" type="text">First Name</x-input>
                         </div>
-                        <div class="flex gap-5">
+                        <div class="hidden gap-5 sm:flex">
                             <x-input name="lname" type="text">Last Name</x-input>
                             <x-input name="birthdate" type="date">Birthdate</x-input>
                         </div>
-                        <div class="flex gap-5">
+                        <div class="hidden gap-5 sm:flex">
                             <x-input name="age" placeholder="Auto calculate" :disabled="false" readonly
                                 :age="true">
                                 Age (auto)
@@ -72,11 +84,11 @@
                 </div>
             </section>
 
-            <section class="flex items-center justify-center flex-grow px-24">
+            <section class="flex items-center justify-center flex-grow w-full xl:w-[700px] xl:ps-16">
                 <div
                     class="relative flex justify-center w-full py-2 bg-white rounded-lg shadow-md jq-table-container h-fit">
                     <div class="max-h-[550px] overflow-x-auto overflow-y-auto w-full">
-                        <table class="table text-center no-wrap-table">
+                        <table class="table text-center no-wrap-table table-xs xl:table-md">
                             <thead class="sticky top-0 bg-white">
                                 <tr>
                                     <th class="pt-1">Employee ID</th>

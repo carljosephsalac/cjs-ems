@@ -1,6 +1,6 @@
 @props(['age' => false, 'disabled' => true, 'placeholder' => 'Type here'])
 
-<label class="w-full form-control">
+<label {{ $attributes->merge(['class' => 'w-full form-control']) }}>
     <div class="label">
         <span class="label-text">{{ $slot }}</span>
     </div>
