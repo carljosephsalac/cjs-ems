@@ -182,7 +182,7 @@
                     resetForm();
 
                     const warning = `
-                        <div role="alert" class="flex absolute w-auto alert xl:-top-24 -top-20 alert-warning jq-warning">
+                        <div role="alert" class="absolute flex w-auto alert xl:-top-24 -top-20 alert-warning jq-warning">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-current shrink-0" fill="none"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -286,6 +286,7 @@
         });
     }
 
+    let alertTimeout; // Variable to store the timeout ID
     function displayAlert(message) {
         let alertType = '';
         if (message === 'Created Successfully') {
@@ -295,6 +296,9 @@
         } else if (message === 'Deleted Successfully') {
             alertType = 'error';
         }
+
+        // Remove any existing alert
+        $('.jq-alert').remove();
 
         // create alert message
         const alert = `
@@ -310,7 +314,13 @@
 
         $('.jq-table-container').append(alert); // append alert
 
-        setTimeout(() => { // remove alert after 3s.
+        // Clear the previous timeout if it exists
+        if (alertTimeout) {
+            clearTimeout(alertTimeout);
+        }
+
+        // Set a new timeout to remove the alert after 3 seconds
+        alertTimeout = setTimeout(() => {
             $('.jq-alert').remove();
         }, 3000);
     }

@@ -14,15 +14,27 @@
     <div class="flex flex-col bg-gray-200 xl:h-screen">
         <nav class="fixed z-10 shadow-md navbar bg-base-100">
             <div class="flex-1">
-                <a class="text-md sm:text-xl btn btn-ghost">Employee Management System</a>
+                <a class="text-xl btn btn-ghost">
+                    <span class="hidden sm:inline">Employee Management System</span>
+                    <span class="inline sm:hidden">EMS</span>
+                </a>
             </div>
             <div class="flex-none">
                 <ul class="px-1 menu menu-horizontal">
                     <li>
                         <details>
-                            <summary>Menu</summary>
-                            <ul class="p-2 rounded-t-none bg-base-100">
-                                <li><a>Logout</a></li>
+                            <summary>
+                                <span class="sm:inline">{{ Auth::user()->fname }}</span>
+                            </summary>
+                            <ul class="w-full p-2 rounded-t-none bg-base-100">
+                                <li class="flex justify-center">
+                                    <form action="{{ route('auth.logout') }}" method="POST"
+                                        class="flex justify-center px-0 text-center"
+                                        onsubmit="disableSubmitButton(this)">
+                                        @csrf
+                                        <button class="w-full" type="submit">Logout</button>
+                                    </form>
+                                </li>
                             </ul>
                         </details>
                     </li>
@@ -31,33 +43,18 @@
         </nav>
 
         <main
-            class="flex flex-col xl:flex-row justify-center px-3 md:px-5 lg:px-8 flex-grow xl:pt-[68px] pt-[160px] items-center xl:gap-5 gap-20 pb-10">
+            class="flex flex-col xl:flex-row justify-center px-3 md:px-5 lg:px-8 flex-grow xl:pt-[68px] pt-[160px] items-center gap-20 pb-10 min-h-screen">
             <section class="flex items-center justify-center w-full sm:w-fit xl:w-[500px]">
                 <div
                     class="relative flex justify-center w-full px-5 py-3 bg-white rounded-lg shadow-md jq-form-container">
-                    <form class="flex flex-col w-full gap-1" action="" method="POST" id="employee-form">
+                    <form class="w-full" action="" method="POST" id="employee-form">
                         @csrf
                         <input type="hidden" id="method" name="_method"> {{-- spoofing, same as @method() --}}
-                        <div class="block sm:hidden">
+                        <div class="grid grid-cols-1 gap-1 sm:grid-cols-2 sm:gap-3">
                             <x-input name="employee_id" type="number">Employee ID</x-input>
                             <x-input name="fname" type="text">First Name</x-input>
                             <x-input name="lname" type="text">Last Name</x-input>
                             <x-input name="birthdate" type="date">Birthdate</x-input>
-                            <x-input name="age" placeholder="Auto calculate" :disabled="false" readonly
-                                :age="true">
-                                Age (auto)
-                            </x-input>
-                            <x-input name="salary" type="number">Salary</x-input>
-                        </div>
-                        <div class="hidden gap-5 sm:flex">
-                            <x-input name="employee_id" type="number">Employee ID</x-input>
-                            <x-input name="fname" type="text">First Name</x-input>
-                        </div>
-                        <div class="hidden gap-5 sm:flex">
-                            <x-input name="lname" type="text">Last Name</x-input>
-                            <x-input name="birthdate" type="date">Birthdate</x-input>
-                        </div>
-                        <div class="hidden gap-5 sm:flex">
                             <x-input name="age" placeholder="Auto calculate" :disabled="false" readonly
                                 :age="true">
                                 Age (auto)
@@ -66,7 +63,7 @@
                         </div>
                         <x-input name="address" type="text">Address</x-input>
                         <input type="hidden" name="employee-id" id="employee-id" value=""> {{-- container for currentEmployee id --}}
-                        <div class="flex justify-center gap-3 my-3">
+                        <div class="flex flex-wrap justify-center gap-3 my-3">
                             <button class="text-white btn btn-primary btn-sm" type="button" id="create-btn">
                                 Create
                             </button>
@@ -84,10 +81,10 @@
                 </div>
             </section>
 
-            <section class="flex items-center justify-center flex-grow w-full xl:w-[700px] xl:ps-16">
+            <section class="flex items-center justify-center flex-grow w-full xl:w-[700px]">
                 <div
-                    class="relative flex justify-center w-full py-2 bg-white rounded-lg shadow-md jq-table-container h-fit">
-                    <div class="max-h-[550px] overflow-x-auto overflow-y-auto w-full">
+                    class="relative flex justify-center w-full py-2 bg-white rounded-lg shadow-md jq-table-container h-fit ">
+                    <div class="max-h-[600px] overflow-x-auto overflow-y-auto w-full">
                         <table class="table text-center no-wrap-table table-xs xl:table-md">
                             <thead class="sticky top-0 bg-white">
                                 <tr>
@@ -141,7 +138,12 @@
         <div class="hidden alert-info"></div>
         <div class="hidden alert-error"></div>
     </div>
-    @include('jquery-ajax')
+    @include('home-jquery')
+    <script>
+        function disableSubmitButton(form) {
+            form.querySelector('[type="submit"]').disabled = true;
+        }
+    </script>
 </body>
 
 </html>
