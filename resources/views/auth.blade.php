@@ -11,8 +11,10 @@
 </head>
 
 <body>
-    <div class="flex items-center justify-center h-screen px-3 bg-gray-200">
-        <div class="jq-login-form relative flex justify-center w-[500px] px-8 py-3 bg-white rounded-lg shadow-md">
+    <div class="flex flex-col items-center justify-center min-h-screen gap-8 px-3 py-5 bg-gray-200">
+        <header class="text-5xl sm:text-6xl jq-header">Login</header>
+        <div
+            class="relative flex justify-center w-full px-5 py-3 bg-white rounded-lg shadow-md jq-login-form max-w-[450px]">
             <form class="w-full" action="" method="POST" id="sign-in-form">
                 @csrf
                 <div class="flex flex-col gap-5 ">

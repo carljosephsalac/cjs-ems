@@ -7,7 +7,7 @@
     function showRegister() {
         $(document).on('click', '.jq-show-register', function() {
             const register = `
-                <div class="jq-login-form relative flex justify-center w-[500px] px-8 py-3 bg-white rounded-lg shadow-md">
+                <div class="relative flex justify-center w-full px-5 py-3 bg-white rounded-lg shadow-md jq-login-form max-w-[450px]">
                     <form class="w-full" action="" method="POST" id="sign-up-form">
                         @csrf
                         <div class="flex flex-col gap-5 ">
@@ -29,13 +29,14 @@
                 </div>
             `;
             $('.jq-login-form').replaceWith(register);
+            $('.jq-header').text('Register');
         });
     }
 
     function showLogin() {
         $(document).on('click', '.jq-show-login', function() {
             const login = `
-                <div class="jq-login-form relative flex justify-center w-[500px] px-8 py-3 bg-white rounded-lg shadow-md">
+                <div class="relative flex justify-center w-full px-5 py-3 bg-white rounded-lg shadow-md jq-login-form max-w-[450px]">
                     <form class="w-full" action="" method="POST" id="sign-in-form">
                         @csrf
                         <div class="flex flex-col gap-5 ">
@@ -54,6 +55,7 @@
                 </div>
             `;
             $('.jq-login-form').replaceWith(login);
+            $('.jq-header').text('Login');
         });
     }
 
@@ -84,7 +86,6 @@
 
     function signIn() {
         $(document).on('click', '.jq-sign-in', function() {
-            console.log('sdfds');
             $.ajax({
                 type: "POST",
                 url: "{{ route('auth.login') }}",
