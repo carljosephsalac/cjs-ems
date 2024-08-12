@@ -35,7 +35,7 @@ class EmployeeController extends Controller
         }
 
         try {
-            $validatedData = $request->all();
+            $validatedData = $validator->validated();
             $validatedData['age'] = Carbon::parse($request->birthdate)->age;
             $employee = Employee::create($validatedData);
 
@@ -59,9 +59,47 @@ class EmployeeController extends Controller
         return response()->json($currentEmployee);
     }
 
+    // public function update(Request $request, Employee $currentEmployee)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'employee_id' => 'required|numeric|unique:employees,employee_id,' . $currentEmployee->id,
+    //         'fname' => 'required|string',
+    //         'lname' => 'required|string',
+    //         'birthdate' => 'required|date',
+    //         'address' => 'required|string',
+    //         'salary' => 'required|max:999999.99|decimal:1,2'
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'errors' => $validator->errors()
+    //         ], 422);
+    //     }
+
+    //     try {
+    //         $validatedData = $request->all();
+    //         $validatedData['age'] = Carbon::parse($request->birthdate)->age;
+    //         $currentEmployee->update($validatedData);
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Updated Successfully',
+    //             'currentEmployee' => $currentEmployee
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         Log::error('Failed to update employee: ' . $e->getMessage());
+
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'An error occurred while updating the employee.'
+    //         ], 500);
+    //     }
+    // }
+
     public function update(Request $request, Employee $currentEmployee)
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $request->validate([
             'employee_id' => 'required|numeric|unique:employees,employee_id,' . $currentEmployee->id,
             'fname' => 'required|string',
             'lname' => 'required|string',
@@ -70,31 +108,19 @@ class EmployeeController extends Controller
             'salary' => 'required|max:999999.99|decimal:1,2'
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()
-            ], 422);
+        // session(['currentEmployee' => $currentEmployee]);
+
+        session(['old_updated_at' => $currentEmployee->updated_at]);
+
+        $currentEmployee->update($validated);
+
+        if (session('old_updated_at')->eq($currentEmployee->updated_at)) {
+            return redirect()->route('index')->with('no', 'No changes were made');
+        } else {
+            return redirect()->route('index')->with('updated', 'Updated Successfully');
         }
 
-        try {
-            $validatedData = $request->all();
-            $validatedData['age'] = Carbon::parse($request->birthdate)->age;
-            $currentEmployee->update($validatedData);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Updated Successfully',
-                'currentEmployee' => $currentEmployee
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Failed to update employee: ' . $e->getMessage());
-
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while updating the employee.'
-            ], 500);
-        }
     }
 
     public function delete(Employee $currentEmployee)
@@ -102,21 +128,28 @@ class EmployeeController extends Controller
         return response()->json($currentEmployee);
     }
 
+    // public function destroy(Employee $currentEmployee)
+    // {
+    //     try {
+    //         $currentEmployee->delete();
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Deleted Successfully'
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         Log::error('Failed to delete employee: ' . $e->getMessage());
+
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'An error occurred while deleting the employee.'
+    //         ], 500);
+    //     }
+    // }
+
     public function destroy(Employee $currentEmployee)
     {
-        try {
-            $currentEmployee->delete();
-            return response()->json([
-                'success' => true,
-                'message' => 'Deleted Successfully'
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Failed to delete employee: ' . $e->getMessage());
+        $currentEmployee->delete();
 
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while deleting the employee.'
-            ], 500);
-        }
+        return redirect()->route('index')->with('deleted', 'Deleted Successfully');
     }
 }

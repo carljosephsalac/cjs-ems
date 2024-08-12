@@ -6,17 +6,40 @@
     const employeeForm = $('#employee-form');
     const hiddenMethod = $('#method'); // hidden input for HTTP method
 
-    createBtn.on('click', () => {
-        $('.jq-input').removeAttr('disabled');
-        saveBtn.removeAttr('disabled');
-        createBtn.prop('disabled', true);
-    });
+    function disableSubmitButton(event) { // Function to disable the submit button
+        const $form = $(event.target);
+        const $submitButton = $form.find('[type="submit"]');
+        $submitButton.prop('disabled', true);
+    }
+    $('form').on('submit', disableSubmitButton); // Attach the submit event listener to all forms
 
+    let alertTimeout; // Variable to store the timeout ID
+    if (alertTimeout) { // Clear the previous timeout if it exists
+
+        clearTimeout(alertTimeout);
+    }
+    alertTimeout = setTimeout(() => { // Set a new timeout to remove the alert after 3 seconds
+        $('.jq-alert').remove();
+    }, 3000);
+
+    create();
     store();
     edit();
     update();
     deleteEmployee();
     destroy();
+
+    function create() {
+        createBtn.on('click', () => {
+            resetForm();
+            saveBtn.removeAttr('disabled');
+            updateBtn.prop('disabled', true);
+            destroyBtn.prop('disabled', true);
+            hiddenMethod.val('');
+            createBtn.prop('disabled', true);
+            $('.jq-input').removeAttr('disabled');
+        });
+    }
 
     function store() {
         saveBtn.on('click', () => {
@@ -95,7 +118,6 @@
 
                     hiddenMethod.val('PUT'); // Set method to PUT for update
 
-                    createBtn.prop('disabled', true); // Disable create button
                     saveBtn.prop('disabled', true); // Disable save button
                     updateBtn.removeAttr('disabled'); // Enable update button
                     destroyBtn.prop('disabled', true); // Disable delete button
@@ -108,67 +130,82 @@
         });
     }
 
+    // function update() {
+    //     updateBtn.on('click', () => {
+    //         // Retrieve the employeeId from the hidden input field
+    //         const employeeId = $('#employee-id').val();
+    //         $.ajax({
+    //             url: '{{ route('update', ['currentEmployee' => ':id']) }}'.replace(':id', employeeId),
+    //             method: 'PUT',
+    //             data: employeeForm.serialize(), // form data
+    //             headers: {
+    //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    //             },
+    //             success: function(response) {
+    //                 if (response.success) {
+    //                     const currentEmployee = response.currentEmployee;
+    //                     const message = response.message;
+
+    //                     displayAlert(message);
+
+    //                     // Update the existing table row with the updated employee data
+    //                     const updatedRow = `
+    //                             <tr data-id="${currentEmployee.id}">
+    //                                 <th class="whitespace-nowrap">${currentEmployee.employee_id}</th>
+    //                                 <td class="whitespace-nowrap">${currentEmployee.fname}</td>
+    //                                 <td class="whitespace-nowrap">${currentEmployee.lname}</td>
+    //                                 <td class="whitespace-nowrap">${currentEmployee.birthdate}</td>
+    //                                 <td class="whitespace-nowrap">${currentEmployee.age}</td>
+    //                                 <td class="whitespace-nowrap">${currentEmployee.salary}</td>
+    //                                 <td class="whitespace-nowrap">${currentEmployee.address}</td>
+    //                                 <td>
+    //                                     <button class="text-white btn btn-info btn-sm" type="button" data-id="${currentEmployee.id}" id="edit-btn">
+    //                                         Edit
+    //                                     </button>
+    //                                 </td>
+    //                                 <td>
+    //                                     <button class="text-white btn btn-error btn-sm" type="button" id="delete-btn"
+    //                                         data-id="${currentEmployee.id}">
+    //                                         Delete
+    //                                     </button>
+    //                                 </td>
+    //                             </tr>
+    //                         `;
+    //                     // Replace the old row with the updated row
+    //                     $(`#jq-tbody tr[data-id="${employeeId}"]`).replaceWith(updatedRow);
+
+    //                     hiddenMethod.val(''); // Clear the hidden input field
+
+    //                     resetForm();
+
+    //                     updateBtn.prop('disabled', true);
+    //                 } else {
+    //                     console.log(response.errors);
+    //                 }
+    //             },
+    //             error: function(response) {
+    //                 displayErrors(response.responseJSON.errors);
+    //                 console.log(response.responseJSON.errors);
+    //             }
+    //         });
+    //     });
+    // }
+
     function update() {
         updateBtn.on('click', () => {
-            // Retrieve the employeeId from the hidden input field
             const employeeId = $('#employee-id').val();
-            $.ajax({
-                url: '{{ route('update', ['currentEmployee' => ':id']) }}'.replace(':id', employeeId),
-                method: 'PUT',
-                data: employeeForm.serialize(), // form data
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    if (response.success) {
-                        const currentEmployee = response.currentEmployee;
-                        const message = response.message;
 
-                        displayAlert(message);
+            hiddenMethod.val('PUT');
 
-                        // Update the existing table row with the updated employee data
-                        const updatedRow = `
-                                <tr data-id="${currentEmployee.id}">
-                                    <th class="whitespace-nowrap">${currentEmployee.employee_id}</th>
-                                    <td class="whitespace-nowrap">${currentEmployee.fname}</td>
-                                    <td class="whitespace-nowrap">${currentEmployee.lname}</td>
-                                    <td class="whitespace-nowrap">${currentEmployee.birthdate}</td>
-                                    <td class="whitespace-nowrap">${currentEmployee.age}</td>
-                                    <td class="whitespace-nowrap">${currentEmployee.salary}</td>
-                                    <td class="whitespace-nowrap">${currentEmployee.address}</td>
-                                    <td>
-                                        <button class="text-white btn btn-info btn-sm" type="button" data-id="${currentEmployee.id}" id="edit-btn">
-                                            Edit
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <button class="text-white btn btn-error btn-sm" type="button" id="delete-btn"
-                                            data-id="${currentEmployee.id}">
-                                            Delete
-                                        </button>
-                                    </td>
-                                </tr>
-                            `;
-                        // Replace the old row with the updated row
-                        $(`#jq-tbody tr[data-id="${employeeId}"]`).replaceWith(updatedRow);
+            employeeForm.attr('action',
+                '{{ route('update', ['currentEmployee' => ':id']) }}'
+                .replace(':id', employeeId));
 
-                        hiddenMethod.val(''); // Clear the hidden input field
+            employeeForm.submit();
 
-                        resetForm();
-
-                        updateBtn.prop('disabled', true);
-                    } else {
-                        console.log(response.errors);
-                    }
-                },
-                error: function(response) {
-                    displayErrors(response.responseJSON.errors);
-                    console.log(response.responseJSON.errors);
-                }
-            });
+            updateBtn.prop('disabled', true);
         });
     }
-
 
     function deleteEmployee() {
         // Attach a delegated event listener to the static parent element #jq-tbody
@@ -215,7 +252,6 @@
                     $('input').removeAttr('disabled');
                     hiddenMethod.val('DELETE'); // Set method to DELETE for destroy
 
-                    createBtn.prop('disabled', true); // Disable create button
                     saveBtn.prop('disabled', true); // Disable save button
                     updateBtn.prop('disabled', true); // Disable update button
                     destroyBtn.removeAttr('disabled'); // Enable update button
@@ -227,42 +263,55 @@
         });
     }
 
+    // function destroy() {
+    //     destroyBtn.on('click', () => {
+    //         // Retrieve the employeeId from the hidden input field
+    //         const employeeId = $('#employee-id').val();
+    //         $.ajax({
+    //             url: '{{ route('destroy', ['currentEmployee' => ':id']) }}'.replace(':id', employeeId),
+    //             method: 'DELETE',
+    //             data: employeeForm.serialize(), // form data
+    //             headers: {
+    //                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    //             },
+    //             success: function(response) {
+    //                 if (response.success) {
+    //                     const message = response.message;
+
+    //                     displayAlert(message);
+
+    //                     $(`#jq-tbody tr[data-id="${employeeId}"]`).remove(); // delete row
+
+    //                     hiddenMethod.val(''); // Clear the hidden input field
+
+    //                     resetForm();
+
+    //                     destroyBtn.prop('disabled', true);
+    //                 } else {
+    //                     console.log(response.errors);
+    //                 }
+    //             },
+    //             error: function(response) {
+    //                 displayErrors(response.responseJSON.errors);
+    //                 console.log(response.responseJSON.errors);
+    //             }
+    //         });
+    //     });
+    // }
+
     function destroy() {
         destroyBtn.on('click', () => {
-            // Retrieve the employeeId from the hidden input field
             const employeeId = $('#employee-id').val();
-            $.ajax({
-                url: '{{ route('destroy', ['currentEmployee' => ':id']) }}'.replace(':id', employeeId),
-                method: 'DELETE',
-                data: employeeForm.serialize(), // form data
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    if (response.success) {
-                        const message = response.message;
 
-                        displayAlert(message);
+            $('#delete-form').attr('action',
+                '{{ route('destroy', ['currentEmployee' => ':id']) }}'
+                .replace(':id', employeeId));
 
-                        $(`#jq-tbody tr[data-id="${employeeId}"]`).remove(); // delete row
+            $('#delete-form').submit();
 
-                        hiddenMethod.val(''); // Clear the hidden input field
-
-                        resetForm();
-
-                        destroyBtn.prop('disabled', true);
-                    } else {
-                        console.log(response.errors);
-                    }
-                },
-                error: function(response) {
-                    displayErrors(response.responseJSON.errors);
-                    console.log(response.responseJSON.errors);
-                }
-            });
+            destroyBtn.prop('disabled', true);
         });
     }
-
 
 
     // UTILITY FUNCTIONS
@@ -286,7 +335,6 @@
         });
     }
 
-    let alertTimeout; // Variable to store the timeout ID
     function displayAlert(message) {
         let alertType = '';
         if (message === 'Created Successfully') {
@@ -326,12 +374,15 @@
     }
 
     function resetForm() {
-        $('#employee-form')[0].reset(); // clear the form fields
+        employeeForm[0].reset(); // clear the form fields
         $('.jq-error').remove(); // Remove previous error messages
         $('.input-error').removeClass('input-error'); // Remove previous input-error
         $('.jq-input').prop('disabled', true);
+        $('.jq-input').val('');
         $('.jq-input').removeAttr('readonly');
         createBtn.removeAttr('disabled');
         $('.jq-warning').remove();
+        $('[name="age"]').prop('readonly', true);
+        $('[name="age"]').removeAttr('disabled');
     }
 </script>

@@ -32,7 +32,7 @@ class AuthController extends Controller
         }
 
         try {
-            $validatedData = $request->only(['fname', 'lname', 'email', 'password']);
+            $validatedData = $validator->validated();
             $validatedData['password'] = bcrypt($validatedData['password']);
             $user = User::create($validatedData);
 
@@ -68,7 +68,7 @@ class AuthController extends Controller
         }
 
         // Extract credentials from request
-        $credentials = $request->only('email', 'password');
+        $credentials = $validator->validated();
 
         // Check if authentication is successful
         if (!Auth::attempt($credentials)) {

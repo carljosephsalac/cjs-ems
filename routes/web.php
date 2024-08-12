@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\LaravelEmployeeController;
 use App\Http\Middleware\UserOnly;
 use Illuminate\Support\Facades\Route;
 
@@ -22,3 +23,15 @@ Route::controller(AuthController::class)->group(fn() => [
     Route::post('/auth/login', 'login')->name('auth.login'),
     Route::post('/auth/logout', 'logout')->name('auth.logout')->middleware(UserOnly::class),
 ]);
+
+Route::controller(LaravelEmployeeController::class)->group(function() {
+    Route::middleware(UserOnly::class)->group(function() {
+        Route::get('/employees', 'index')->name('employees.index');
+        Route::post('/employees', 'store')->name('employees.store');
+        Route::get('/employees/create', 'create')->name('employees.create');
+        Route::get('/employees/{employee}/edit', 'edit')->name('employees.edit');
+        Route::patch('/employees/{employee}', 'update')->name('employees.update');
+        Route::get('/employees/{employee}/delete', 'delete')->name('employees.delete');
+        Route::delete('/employees/{employee}', 'destroy')->name('employees.destroy');
+    });
+});

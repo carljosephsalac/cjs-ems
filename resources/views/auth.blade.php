@@ -6,8 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Authentication</title>
-    @vite('resources/css/app.css')
+    <link rel="icon" type="image/x-icon" href="{{ Vite::asset('resources/images/employee.ico') }}">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="{{ asset('jquery.js') }}"></script>
+    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script> --}}
 </head>
 
 <body>
@@ -18,8 +20,8 @@
             <form class="w-full" action="" method="POST" id="sign-in-form">
                 @csrf
                 <div class="flex flex-col gap-5 ">
-                    <x-input class="relative" name="email" type="email" :disabled="false">Email</x-input>
-                    <x-input class="relative" name="password" type="password" :disabled="false">Password</x-input>
+                    <x-input class="relative" name="email" type="email" disabled="">Email</x-input>
+                    <x-input class="relative" name="password" type="password" disabled="">Password</x-input>
                     <div class="flex flex-wrap justify-end gap-3 my-3">
                         <button class="text-white jq-sign-in btn btn-success btn-sm" type="button">
                             Sign in
